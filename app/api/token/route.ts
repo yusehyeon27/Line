@@ -1,3 +1,5 @@
+// app/api/token/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import { saveTokensToDisk } from "../../../auth/tokenManager.js";
 
@@ -14,7 +16,7 @@ export async function POST(req: NextRequest) {
 
   const res = await fetch("https://auth.worksmobile.com/oauth2/v2.0/token", {
     method: "POST",
-    body: params,
+    body: params.toString(),
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (data.access_token) {
     response.cookies.set("accessToken", data.access_token, {
       httpOnly: true,
-      secure: false, // Allow in development (self-signed certs); set to true in production
+      secure: true, // Allow in development (self-signed certs); set to true in production
       sameSite: "lax",
       maxAge: 60 * 60 * 24, // 24 hours
       path: "/",
