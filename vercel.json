@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/sendMessage/route.ts": {
+      "runtime": "nodejs20.x",
+      "schedule": "0 9-18 * * *"
+    }
+  }
+}
