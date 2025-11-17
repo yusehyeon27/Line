@@ -16,7 +16,7 @@ const clientSecret = process.env.CLIENT_SECRET;
 
 const TOKEN_STORE = path.join(process.cwd(), ".tokens.json");
 
-// --- OAuth URL 생성 ---
+// --- OAuth URL 生成 ---
 export function buildAuthUrl() {
   const params = new URL(AUTH_URL);
   params.searchParams.set("client_id", clientId);
@@ -30,7 +30,7 @@ export function buildAuthUrl() {
   return params.toString();
 }
 
-// --- 코드로 토큰 교환 ---
+// --- コードでトークン交換 ---
 async function exchangeCodeForToken(code) {
   const params = new URLSearchParams();
   params.append("grant_type", "authorization_code");
@@ -45,7 +45,7 @@ async function exchangeCodeForToken(code) {
   return res.data;
 }
 
-// --- 토큰 저장 (Vercel 배포용: 24시간 유효) ---
+// --- トークン更新 ---
 export async function saveTokensToDisk(tokenData) {
   try {
     const obj = {
@@ -59,7 +59,7 @@ export async function saveTokensToDisk(tokenData) {
   }
 }
 
-// --- 토큰 로드 ---
+// --- トークンロード ---
 async function loadTokensFromDisk() {
   try {
     const raw = await fs.readFile(TOKEN_STORE, "utf8");
@@ -69,7 +69,7 @@ async function loadTokensFromDisk() {
   }
 }
 
-// --- refresh token으로 갱신 ---
+// --- refresh tokenで更新 ---
 async function refreshAccessToken(refreshToken) {
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
@@ -83,7 +83,7 @@ async function refreshAccessToken(refreshToken) {
   return res.data;
 }
 
-// --- 서버용 액세스 토큰 ---
+// --- サーバー用トークンロード ---
 export async function getServerAccessToken() {
   const stored = await loadTokensFromDisk();
   if (

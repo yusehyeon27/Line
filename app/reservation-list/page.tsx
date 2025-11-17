@@ -24,7 +24,11 @@ export default function ReservationListPage() {
         const sheetData = await res.json();
         console.log("📄 取得データ:", sheetData);
 
-        // 予約IDは含めるが画面では非表示
+        // 🔽🔽 ここを追加：送信時間の新しい順に並び替え 🔽🔽
+        sheetData.sort((a: any, b: any) => {
+          return new Date(b.time).getTime() - new Date(a.time).getTime();
+        });
+
         setData(sheetData);
       } catch (err) {
         console.error("❌ データ取得エラー:", err);
@@ -33,7 +37,6 @@ export default function ReservationListPage() {
 
     fetchData();
   }, []);
-
   const handleDelete = async (id: string) => {
     try {
       const res = await fetch(`/api/sheets?id=${id}`, { method: "DELETE" });
