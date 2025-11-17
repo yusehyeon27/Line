@@ -1,35 +1,76 @@
 "use client";
 
-//import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 export default function ReservationListPage() {
   const [data, setData] = useState<any[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  //totalPages を data に応じて自動的に計算する
+  const totalPages = React.useMemo(() => {
+    return Math.ceil(data.length / itemsPerPage);
+  }, [data]);
 
-  // ✅ Google Sheetsからデータ取得
+  //currentData も data または currentPage の変更時に自動更新
+  const currentData = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return data.slice(startIndex, startIndex + itemsPerPage);
+  }, [data, currentPage]);
+
+  //currentPageがtotalPagesより大きい場合は自動的に修正
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages || 1);
+    }
+  }, [totalPages]);
+
+  // ====データ取得====
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch("/api/sheets");
         const sheetData = await res.json();
-        console.log("📄 取得データ:", sheetData);
 
-        // 🔽🔽 ここを追加：送信時間の新しい順に並び替え 🔽🔽
-        sheetData.sort((a: any, b: any) => {
-          return new Date(b.time).getTime() - new Date(a.time).getTime();
+        console.log(
+          "📄 raw fetch count:",
+          Array.isArray(sheetData) ? sheetData.length : "not array",
+          sheetData
+        );
+
+        if (!Array.isArray(sheetData)) {
+          console.error("api/sheets 응답이 배열이 아닙니다:", sheetData);
+          setData([]);
+          return;
+        }
+
+        // 1) id がない、または重複した項目を防止: id で重複排除
+        const dedupMap = new Map<string, any>();
+        for (const item of sheetData) {
+          // item.id がなければフォールバック: time+message を組み合わせた一時キー (推奨: スプレッドシートに id 必須)
+          const key =
+            item.id ??
+            `${item.time ?? ""}__${(item.message ?? "").slice(0, 50)}`;
+          if (!dedupMap.has(key))
+            dedupMap.set(key, { ...item, id: item.id ?? key });
+        }
+        const deduped = Array.from(dedupMap.values());
+
+        console.log("📄 deduped count:", deduped.length);
+
+        // 2) 最新順にソート
+        deduped.sort((a: any, b: any) => {
+          const ta = new Date(a.time).getTime() || 0;
+          const tb = new Date(b.time).getTime() || 0;
+          return tb - ta;
         });
 
-        setData(sheetData);
+        // 3) setData (そして currentPage 安全補正)
+        setData(deduped);
       } catch (err) {
         console.error("❌ データ取得エラー:", err);
       }
