@@ -1,3 +1,5 @@
+// app/api/bot/send/route.ts
+
 import { NextResponse } from "next/server";
 import sendPendingMessages from "../../../../lib/sendWorker.js";
 

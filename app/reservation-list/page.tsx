@@ -78,7 +78,6 @@ export default function ReservationListPage() {
 
     fetchData();
   }, []);
-
   const handleDelete = async (id: string) => {
     try {
       const res = await fetch(`/api/sheets?id=${id}`, { method: "DELETE" });

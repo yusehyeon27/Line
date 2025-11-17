@@ -1,3 +1,5 @@
+// app/api/auth/start/route.ts
+
 import { NextResponse } from "next/server";
 import { buildAuthUrl } from "../../../../auth/tokenManager.js";
 
