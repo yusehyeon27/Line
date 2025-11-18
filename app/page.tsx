@@ -38,14 +38,44 @@ export default function ReservationPage() {
     window.location.href = authUrl.toString();
   };
 
-  // NOTE: クライアント ID などは公開情報だが、秘密鍵などは絶対にログに出さないこと
+  const containerStyle = {
+    display: "flex",
+    flexDirection: "column" as const,
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    textAlign: "center" as const,
+  };
 
+  const headerStyle = {
+    fontSize: "28px",
+    marginBottom: "40px",
+    fontWeight: "bold",
+  };
+
+  const buttonStyle = {
+    padding: "20px 40px",
+    backgroundColor: "rgb(7, 181, 59)",
+    color: "#fff",
+    borderRadius: "8px",
+    border: "none",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "opacity 0.2s",
+  };
+
+  // ============================
+  // ⭐ return UI만 변경 (기능 0% 변경)
+  // ============================
   return (
-    <div>
-      <h1>LINEWORKS ログイン</h1>
+    <div style={containerStyle}>
+      <h1 style={headerStyle}>LINE WORKS ログイン</h1>
+
       <button
         onClick={handleLogin}
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        style={buttonStyle}
+        onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+        onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
       >
         ログイン
       </button>
