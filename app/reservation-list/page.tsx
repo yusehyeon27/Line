@@ -43,7 +43,7 @@ export default function ReservationListPage() {
         );
 
         if (!Array.isArray(sheetData)) {
-          console.error("api/sheets 응답이 배열이 아닙니다:", sheetData);
+          console.error("配列ではないです：", sheetData);
           setData([]);
           return;
         }
@@ -174,14 +174,16 @@ export default function ReservationListPage() {
               </td>
               <td style={tdStyle}>{row.status}</td>
               <td style={tdStyle}>
-                <button
-                  style={editBtn}
-                  onClick={() =>
-                    (window.location.href = `/reservation/${row.id}`)
-                  }
-                >
-                  修正
-                </button>
+                {row.status !== "送信済み" && (
+                  <button
+                    style={editBtn}
+                    onClick={() =>
+                      (window.location.href = `/reservation/${row.id}`)
+                    }
+                  >
+                    修正
+                  </button>
+                )}
               </td>
               <td style={tdStyle}>
                 <button

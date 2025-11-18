@@ -16,7 +16,7 @@ const clientSecret = process.env.CLIENT_SECRET;
 
 const TOKEN_STORE = path.join(process.cwd(), ".tokens.json");
 
-// --- OAuth URL 생성 ---
+// --- OAuth URL 生成 ---
 export function buildAuthUrl() {
   const params = new URL(AUTH_URL);
   params.searchParams.set("client_id", clientId);
@@ -30,28 +30,13 @@ export function buildAuthUrl() {
   return params.toString();
 }
 
-// --- 코드로 토큰 교환 ---
-async function exchangeCodeForToken(code) {
-  const params = new URLSearchParams();
-  params.append("grant_type", "authorization_code");
-  params.append("code", code);
-  params.append("client_id", clientId);
-  params.append("client_secret", clientSecret);
-  params.append("redirect_uri", redirectUri);
-
-  const res = await axios.post(TOKEN_URL, params, {
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  });
-  return res.data;
-}
-
-// --- 토큰 저장 (Vercel 배포용: 24시간 유효) ---
+// --- トークン保存　---
 export async function saveTokensToDisk(tokenData) {
   try {
     const obj = {
       access_token: tokenData.access_token,
       refresh_token: tokenData.refresh_token,
-      expires_at: Date.now() + 24 * 60 * 60 * 1000, // 24시간
+      expires_at: Date.now() + 24 * 60 * 60 * 1000, // 24時間
     };
     await fs.writeFile(TOKEN_STORE, JSON.stringify(obj, null, 2), "utf8");
   } catch (err) {
@@ -59,7 +44,7 @@ export async function saveTokensToDisk(tokenData) {
   }
 }
 
-// --- 토큰 로드 ---
+// --- トークンLOAD ---
 async function loadTokensFromDisk() {
   try {
     const raw = await fs.readFile(TOKEN_STORE, "utf8");
@@ -69,7 +54,7 @@ async function loadTokensFromDisk() {
   }
 }
 
-// --- refresh token으로 갱신 ---
+// --- リフレッシュトークンで更新 ---
 async function refreshAccessToken(refreshToken) {
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
@@ -83,7 +68,7 @@ async function refreshAccessToken(refreshToken) {
   return res.data;
 }
 
-// --- 서버용 액세스 토큰 ---
+// --- サーバー用アクセストークン ---
 export async function getServerAccessToken() {
   const stored = await loadTokensFromDisk();
   if (
@@ -100,5 +85,3 @@ export async function getServerAccessToken() {
   }
   throw new Error("No stored tokens available. Complete OAuth flow first.");
 }
-
-// --- 서버리스용 인터랙티브는 제거 (Vercel에서는 지원 안됨)
