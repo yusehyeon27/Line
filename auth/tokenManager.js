@@ -30,6 +30,7 @@ export function buildAuthUrl() {
   return params.toString();
 }
 
+// --- トークン保存　---
 // --- コードでトークン交換 ---
 async function exchangeCodeForToken(code) {
   const params = new URLSearchParams();
@@ -51,7 +52,7 @@ export async function saveTokensToDisk(tokenData) {
     const obj = {
       access_token: tokenData.access_token,
       refresh_token: tokenData.refresh_token,
-      expires_at: Date.now() + 24 * 60 * 60 * 1000, // 24시간
+      expires_at: Date.now() + 24 * 60 * 60 * 1000, // 24時間
     };
     await fs.writeFile(TOKEN_STORE, JSON.stringify(obj, null, 2), "utf8");
   } catch (err) {
@@ -59,7 +60,7 @@ export async function saveTokensToDisk(tokenData) {
   }
 }
 
-// --- トークンロード ---
+// --- トークンLOAD ---
 async function loadTokensFromDisk() {
   try {
     const raw = await fs.readFile(TOKEN_STORE, "utf8");
@@ -69,7 +70,7 @@ async function loadTokensFromDisk() {
   }
 }
 
-// --- refresh tokenで更新 ---
+// --- リフレッシュトークンで更新 ---
 async function refreshAccessToken(refreshToken) {
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
@@ -83,7 +84,7 @@ async function refreshAccessToken(refreshToken) {
   return res.data;
 }
 
-// --- サーバー用トークンロード ---
+// --- サーバー用アクセストークン ---
 export async function getServerAccessToken() {
   const stored = await loadTokensFromDisk();
   if (
@@ -100,5 +101,3 @@ export async function getServerAccessToken() {
   }
   throw new Error("No stored tokens available. Complete OAuth flow first.");
 }
-
-// --- 서버리스용 인터랙티브는 제거 (Vercel에서는 지원 안됨)
