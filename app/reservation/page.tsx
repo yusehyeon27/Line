@@ -87,7 +87,7 @@ export default function ReservationPage() {
           (v: any, i: number, self: any[]) =>
             i === self.findIndex((u) => u.userId === v.userId)
         );
-        setEmployees(data.users);
+        setEmployees(uniqueUsers);
         setShowEmployeeList(true);
       } else {
         alert("社員リストを取得できませんでした");
