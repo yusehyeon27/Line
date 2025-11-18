@@ -135,13 +135,26 @@ export default function ReservationListPage() {
             <tr key={row.id}>
               <td style={tdStyle}>
                 {(() => {
-                  const parts = row.time?.split(" ");
-                  if (!parts || parts.length < 2) return row.time;
-                  const [date, time] = parts;
+                  if (!row.time) return row.time;
+
+                  // "2025/11/17 9:30:00" などの形式を分解
+                  const [date, time] = row.time.split(" ");
+
+                  if (!date || !time) return row.time;
+
+                  // 時刻部分 "9:30:00" → ["9", "30", "00"]
+                  const [hourStr, minuteStr] = time.split(":");
+
+                  // 2桁にゼロ埋め
+                  const hour = hourStr.padStart(2, "0"); // ← 9 → 09
+                  const minute = minuteStr.padStart(2, "0");
+
+                  const formattedTime = `${hour}:${minute}`;
+
                   return (
                     <>
                       <div>{date}</div>
-                      <div style={{ fontSize: "15px" }}>{time.slice(0, 5)}</div>
+                      <div style={{ fontSize: "15px" }}>{formattedTime}</div>
                     </>
                   );
                 })()}
